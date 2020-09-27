@@ -34,7 +34,7 @@ void main() {
       final expectedJson = {
         "data": {
           "subreddit": "politics",
-          "authorFullName": "t2_2gol75lf",
+          "author_fullname": "t2_2gol75lf",
           "title": "Trump and U.S. In COVID-19 crisis is \'like watching the decline of the Roman Empire\' says a Canadian mayor",
           "name": "t3_j04jh3",
           "url": "https://www.newsweek.com/trump-coronavirus-roman-empire-1534423",

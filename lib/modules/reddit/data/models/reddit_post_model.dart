@@ -30,7 +30,7 @@ class RedditPostModel extends RedditPost {
     return {
       'data': {
         'subreddit': subreddit,
-        'authorFullName': authorFullName,
+        'author_fullname': authorFullName,
         'title': title,
         'name': name,
         'url': url,

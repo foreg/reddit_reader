@@ -3,12 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:reddit_reader/core/errors/exception.dart';
 import 'package:reddit_reader/core/errors/failure.dart';
-import 'package:reddit_reader/core/platform/network_info.dart';
+import 'package:reddit_reader/core/network/network_info.dart';
 import 'package:reddit_reader/modules/reddit/data/datasources/reddit_post_local_data_source.dart';
 import 'package:reddit_reader/modules/reddit/data/datasources/reddit_post_remote_data_source.dart';
+import 'package:reddit_reader/modules/reddit/data/models/reddit_post_list_model.dart';
 import 'package:reddit_reader/modules/reddit/data/models/reddit_post_model.dart';
 import 'package:reddit_reader/modules/reddit/data/repositories/reddit_post_repository_impl.dart';
-import 'package:reddit_reader/modules/reddit/domain/entities/reddit_post.dart';
+import 'package:reddit_reader/modules/reddit/domain/entities/reddit_post_list.dart';
 
 class MockRedditPostLocalDataSource extends Mock
     implements RedditPostLocalDataSource {}
@@ -73,7 +74,8 @@ void main() {
         url: 'url',
       ),
     ];
-    final List<RedditPost> tRedditPosts = tRedditPostsModels;
+    final tRedditPostListModel = RedditPostListModel(posts: tRedditPostsModels);
+    final RedditPostList tRedditPostList = tRedditPostListModel;
 
     test('should sheck for Internet availability', () {
       when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
@@ -86,19 +88,19 @@ void main() {
         'should return remote data when the call to remote data source is successful',
         () async {
           when(mockRedditPostRemoteDataSource.getRedditPosts(tSubreddit))
-              .thenAnswer((_) async => tRedditPostsModels);
+              .thenAnswer((_) async => tRedditPostListModel);
           final result = await repository.getRedditPosts(tSubreddit);
           verify(mockRedditPostRemoteDataSource.getRedditPosts(tSubreddit));
-          expect(result, equals(Right(tRedditPostsModels)));
+          expect(result, equals(Right(tRedditPostListModel)));
         },
       );
 
       test('should cache data locally', () async {
         when(mockRedditPostRemoteDataSource.getRedditPosts(tSubreddit))
-            .thenAnswer((_) async => tRedditPostsModels);
+            .thenAnswer((_) async => tRedditPostListModel);
         await repository.getRedditPosts(tSubreddit);
         verify(mockRedditPostRemoteDataSource.getRedditPosts(tSubreddit));
-        verify(mockRedditPostLocalDataSource.cacheRedditPosts(tRedditPosts));
+        verify(mockRedditPostLocalDataSource.cacheRedditPosts(tRedditPostList));
       });
 
       test('should return ServerFailure when call is unsuccessfull', () async {
@@ -116,11 +118,11 @@ void main() {
         'should return last locally cached data when there is',
         () async {
           when(mockRedditPostLocalDataSource.getLastRedditPosts())
-              .thenAnswer((_) async => tRedditPosts);
+              .thenAnswer((_) async => tRedditPostList);
           final result = await repository.getRedditPosts(tSubreddit);
           verifyZeroInteractions(mockRedditPostRemoteDataSource);
           verify(mockRedditPostLocalDataSource.getLastRedditPosts());
-          expect(result, equals(Right(tRedditPosts)));
+          expect(result, equals(Right(tRedditPostList)));
         },
       );
 
@@ -155,7 +157,8 @@ void main() {
         url: 'url',
       ),
     ];
-    final List<RedditPost> tRedditPosts = tRedditPostsModels;
+    final tRedditPostListModel = RedditPostListModel(posts: tRedditPostsModels);
+    final RedditPostList tRedditPostList = tRedditPostListModel;
 
     test('should sheck for Internet availability', () {
       when(mockNetworkInfo.isConnected).thenAnswer((_) async => true);
@@ -168,19 +171,19 @@ void main() {
         'should return remote data when the call to remote data source is successful',
         () async {
           when(mockRedditPostRemoteDataSource.getBestRedditPosts())
-              .thenAnswer((_) async => tRedditPostsModels);
+              .thenAnswer((_) async => tRedditPostListModel);
           final result = await repository.getBestRedditPosts();
           verify(mockRedditPostRemoteDataSource.getBestRedditPosts());
-          expect(result, equals(Right(tRedditPostsModels)));
+          expect(result, equals(Right(tRedditPostListModel)));
         },
       );
 
       test('should cache data locally', () async {
         when(mockRedditPostRemoteDataSource.getBestRedditPosts())
-            .thenAnswer((_) async => tRedditPostsModels);
+            .thenAnswer((_) async => tRedditPostListModel);
         await repository.getBestRedditPosts();
         verify(mockRedditPostRemoteDataSource.getBestRedditPosts());
-        verify(mockRedditPostLocalDataSource.cacheRedditPosts(tRedditPosts));
+        verify(mockRedditPostLocalDataSource.cacheRedditPosts(tRedditPostList));
       });
 
       test('should return ServerFailure when call is unsuccessfull', () async {
@@ -198,11 +201,11 @@ void main() {
         'should return last locally cached data when there is',
         () async {
           when(mockRedditPostLocalDataSource.getLastRedditPosts())
-              .thenAnswer((_) async => tRedditPosts);
+              .thenAnswer((_) async => tRedditPostList);
           final result = await repository.getBestRedditPosts();
           verifyZeroInteractions(mockRedditPostRemoteDataSource);
           verify(mockRedditPostLocalDataSource.getLastRedditPosts());
-          expect(result, equals(Right(tRedditPosts)));
+          expect(result, equals(Right(tRedditPostList)));
         },
       );
 

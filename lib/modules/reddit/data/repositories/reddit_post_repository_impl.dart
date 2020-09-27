@@ -1,14 +1,14 @@
 import 'package:reddit_reader/core/errors/exception.dart';
-import 'package:reddit_reader/core/platform/network_info.dart';
+import 'package:reddit_reader/core/network/network_info.dart';
 import 'package:reddit_reader/modules/reddit/data/datasources/reddit_post_local_data_source.dart';
 import 'package:reddit_reader/modules/reddit/data/datasources/reddit_post_remote_data_source.dart';
-import 'package:reddit_reader/modules/reddit/domain/entities/reddit_post.dart';
 import 'package:reddit_reader/core/errors/failure.dart';
 import 'package:dartz/dartz.dart';
 import 'package:meta/meta.dart';
+import 'package:reddit_reader/modules/reddit/domain/entities/reddit_post_list.dart';
 import 'package:reddit_reader/modules/reddit/domain/repositories/reddit_post_repository.dart';
 
-typedef Future<List<RedditPost>> _MethodChooser();
+typedef Future<RedditPostList> _MethodChooser();
 
 class RedditPostRepositoryImpl extends RedditPostRepository {
   final RedditPostRemoteDataSource remoteDataSource;
@@ -22,18 +22,18 @@ class RedditPostRepositoryImpl extends RedditPostRepository {
   });
 
   @override
-  Future<Either<Failure, List<RedditPost>>> getBestRedditPosts() async {
+  Future<Either<Failure, RedditPostList>> getBestRedditPosts() async {
     return await _getRedditPosts(() => remoteDataSource.getBestRedditPosts());
   }
 
   @override
-  Future<Either<Failure, List<RedditPost>>> getRedditPosts(
+  Future<Either<Failure, RedditPostList>> getRedditPosts(
       String subreddit) async {
     return await _getRedditPosts(
         () => remoteDataSource.getRedditPosts(subreddit));
   }
 
-  Future<Either<Failure, List<RedditPost>>> _getRedditPosts(
+  Future<Either<Failure, RedditPostList>> _getRedditPosts(
       _MethodChooser getRedditPosts) async {
     if (await networkInfo.isConnected) {
       try {
